@@ -1,0 +1,31 @@
+@import './global.scss';
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 64.5%;
+}
+
+body {
+  line-height: 1.4;
+  font-family: $font-family;
+  color: $text-color;
+  // background-color: $space-color;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+em {
+  font-style: normal;
+}
+
+ul {
+  list-style: none;
+}

@@ -1,0 +1,26 @@
+@import url('https://fonts.googleapis.com/css2?family=Karla:wght@400;600;700;800&family=Noto+Sans+KR:wght@400;700;900&display=swap');
+
+:root {
+  --white-color: #ffffff;
+  // --green-color: #48ca7f;
+  --green-color: #71c583;
+
+  --text-color: #212222;
+
+  --header-color: var(--white-color);
+  --space-color: #eceff1;
+  --border-color: #d0d7de;
+}
+
+$karla-font: 'Karla', sans-serif;
+$noto-font: 'Noto Sans KR', sans-serif;
+$font-family: $noto-font, $karla-font;
+
+$white: var(--white-color);
+$green: var(--green-color);
+
+$text-color: var(--text-color);
+
+$header-color: var(--header-color);
+$space-color: var(--space-color);
+$border-color: var(--border-color);
