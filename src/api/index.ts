@@ -31,20 +31,17 @@ interface GithubEvent {
 const fetchEvents = async function fetchEvents({
   username,
   page,
-  perPage = 5,
+  perPage = 100,
 }: {
   username: string;
   page: number;
   perPage?: number;
 }) {
-  const response = await octokit.request(
-    'GET /users/{username}/events{?per_page,page}',
-    {
-      username,
-      page,
-      per_page: perPage,
-    },
-  );
+  const response = await octokit.request('GET /users/{username}/events{?per_page,page}', {
+    username,
+    page,
+    per_page: perPage,
+  });
 
   if (response.status !== 200) {
     // TODO: handle error
