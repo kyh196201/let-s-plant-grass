@@ -1,7 +1,14 @@
 import dayjs from 'dayjs';
+import ko from 'dayjs/locale/ko';
 import isBetweenPlugin from 'dayjs/plugin/isBetween';
 
 dayjs.extend(isBetweenPlugin);
+
+// https://github.com/iamkun/dayjs/issues/215#issuecomment-471280396
+dayjs.locale({
+  ...ko,
+  weekStart: 1,
+});
 
 export const FORMAT = 'YYYY.MM.DD HH:mm:ss';
 
@@ -57,5 +64,7 @@ export function getWeekNumber(date = getToday()) {
   // ((요일 - 1) + 해당 날짜) / 7일로 나누기 = N 주차
   return Math.floor((startDay - 1 + currentDate) / 7) + 1;
 }
+
+console.log('getStartOfWeek', getStartOfWeek());
 
 export default {};
