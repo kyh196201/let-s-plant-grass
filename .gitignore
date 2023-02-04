@@ -26,3 +26,12 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+# dotenv environment variable files
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# local data
+local_data
