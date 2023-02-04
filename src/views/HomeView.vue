@@ -1,6 +1,8 @@
 <template>
   <section class="home">
     <div class="home__contents">
+      <div class="home__date">🗓️ {{ month }}월 {{ weekNumber }}주차</div>
+
       <ul>
         <li v-for="user in users" :key="user.email">
           <user-box :user="user"></user-box>
@@ -14,7 +16,12 @@
   import { ref, onMounted } from 'vue';
   import UserBox from '@/components/UserBox.vue';
   import { fetchUser } from '@/api';
+  import { getToday, getMonthOfDate, getWeekNumber } from '@/lib/date';
   import type { User } from '@/interfaces/user';
+
+  const today = getToday();
+  const month = getMonthOfDate(today);
+  const weekNumber = getWeekNumber(today);
 
   const userIds = ['kyh196201', 'JEONMINJU', 'teller2016', 'JOANNASHIN'];
 
@@ -52,6 +59,13 @@
         padding: 1rem;
         border-bottom: 1rem solid $space-color;
       }
+    }
+
+    &__date {
+      padding: 0 1rem;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+      font-weight: bold;
     }
   }
 </style>

@@ -25,7 +25,7 @@
   import { fetchEvents } from '@/api';
   import UserInfo from './UserInfo.vue';
   import CommitList from './CommitList.vue';
-  import { getMonday, getSunday, isBetween } from '@/lib/date';
+  import { getStartOfWeek, getEndOfWeek, isBetween } from '@/lib/date';
   import type { User } from '@/interfaces/user';
   import type { Commit } from '@/interfaces/commit';
   import type { GithubEvent, GithubCommit } from '@/api';
@@ -36,8 +36,8 @@
   }>();
   //#endregion
 
-  const monday = getMonday();
-  const sunday = getSunday();
+  const monday = getStartOfWeek();
+  const sunday = getEndOfWeek();
 
   function isInWeek(date: string, monday: Date, sunday: Date) {
     return isBetween(date, monday, sunday);
