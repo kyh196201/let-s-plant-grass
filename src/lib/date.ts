@@ -33,17 +33,11 @@ export function addDate(date: Date, amount: number): Date {
 }
 
 export function getStartOfWeek(date: Date = new Date()): Date {
-  const sunday = dayjs(date).startOf('week').toDate();
-
-  // 월요일을 한 주의 시작으로 계산
-  return addDate(sunday, 1);
+  return dayjs(date).startOf('week').toDate();
 }
 
 export function getEndOfWeek(date: Date = new Date()): Date {
-  const saturday = dayjs(date).endOf('week').toDate();
-
-  // 일요일을 한 주의 마지막으로 계산
-  return addDate(saturday, 1);
+  return dayjs(date).endOf('week').toDate();
 }
 
 export function isBetween(date: string | Date, start: string | Date, end: string | Date): boolean {
@@ -64,7 +58,5 @@ export function getWeekNumber(date = getToday()) {
   // ((요일 - 1) + 해당 날짜) / 7일로 나누기 = N 주차
   return Math.floor((startDay - 1 + currentDate) / 7) + 1;
 }
-
-console.log('getStartOfWeek', getStartOfWeek());
 
 export default {};
