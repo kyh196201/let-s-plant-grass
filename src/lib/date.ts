@@ -10,12 +10,17 @@ dayjs.locale({
   weekStart: 1,
 });
 
-export const FORMAT = 'YYYY.MM.DD HH:mm:ss';
+export const FORMATS = {
+  DATE_TIME: 'YYYY.MM.DD HH:mm:ss',
+  DATE: 'YYYY.MM.DD',
+} as const;
 
-export function formatDate(value: Date | string, format: string = FORMAT): string {
+export function formatDate(value: Date | string, formatKey: keyof typeof FORMATS = 'DATE_TIME'): string {
   const date = dayjs(value);
 
   if (!date.isValid()) return '';
+
+  const format = FORMATS[formatKey];
 
   return date.format(format);
 }

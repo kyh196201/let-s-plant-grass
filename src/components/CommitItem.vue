@@ -14,7 +14,7 @@
     commit: Commit;
   }>();
 
-  const createAt = computed(() => formatDate(props.commit.createAt, 'YYYY.MM.DD HH:mm:ss'));
+  const createAt = computed(() => formatDate(props.commit.createAt));
 
   const message = computed(() => props.commit.message);
 </script>

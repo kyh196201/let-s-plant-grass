@@ -21,32 +21,35 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref, computed } from 'vue';
+  import { onMounted, ref, computed, toRefs } from 'vue';
   import { fetchEvents } from '@/api';
   import UserInfo from './UserInfo.vue';
   import CommitList from './CommitList.vue';
-  import { getStartOfWeek, getEndOfWeek, isBetween } from '@/lib/date';
+  import { isBetween } from '@/lib/date';
   import type { User } from '@/interfaces/user';
   import type { Commit } from '@/interfaces/commit';
   import type { GithubEvent, GithubCommit } from '@/api';
+  import type { Week } from '@/composables/useWeek';
 
   //#region props & emits
   const props = defineProps<{
     user: User;
+    week: Week;
   }>();
   //#endregion
 
-  const monday = getStartOfWeek();
-  const sunday = getEndOfWeek();
-
-  function isInWeek(date: string, monday: Date, sunday: Date) {
-    return isBetween(date, monday, sunday);
+  function isInWeek(date: string, startOfWeek: Date, endOfWeek: Date) {
+    return isBetween(date, startOfWeek, endOfWeek);
   }
+
+  const { user, week } = toRefs(props);
 
   const commits = ref<Commit[]>([]);
 
   const commitsThisWeek = computed(() => {
-    return commits.value.filter(({ createAt }) => isInWeek(createAt, monday, sunday));
+    const { start, end } = week.value;
+
+    return commits.value.filter(({ createAt }) => isInWeek(createAt, start, end));
   });
 
   const isLoading = ref(false);
