@@ -1,8 +1,12 @@
 <template>
   <section class="home">
     <div class="home__contents">
+      <!-- TODO: 컴포넌트 -->
       <nav class="home__nav">
-        <p class="home__date">📅 {{ weekString }}</p>
+        <div class="home__date">
+          <font-awesome-icon icon="fa-regular fa-calendar" size="lg" />
+          <span>{{ weekString }}</span>
+        </div>
         <div class="home__nav__buttons">
           <button type="button" @click="moveToPrevWeek">이전 주차 보기</button>
           <button type="button" @click="moveToCurrentWeek">이번 주로 돌아가기</button>
@@ -95,6 +99,10 @@
       margin-bottom: 0.5em;
       font-size: 1.5rem;
       font-weight: bold;
+
+      span {
+        margin-left: 1rem;
+      }
     }
   }
 </style>

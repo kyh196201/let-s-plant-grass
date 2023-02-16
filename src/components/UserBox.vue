@@ -9,7 +9,7 @@
         <UserInfo :user="user" />
 
         <span class="user-box__count">
-          <span>이번 주에 올린 커밋: </span>
+          <span>이번 주에 심은 잔디: </span>
           <em>{{ commitsThisWeek.length }}</em>
           <span>개</span>
         </span>
@@ -138,6 +138,7 @@
       em {
         font-weight: bold;
         color: $green;
+        font-size: 1.2em;
       }
     }
   }
