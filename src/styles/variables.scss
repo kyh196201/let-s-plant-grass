@@ -7,6 +7,7 @@
 
   // colors for element
   --text-color: #212222;
+  --layout-color: #f6f6f6;
   --header-color: var(--white-color);
   --space-color: #eceff1;
   --border-color: #d0d7de;
@@ -21,7 +22,10 @@ $white: var(--white-color);
 $green: var(--green-color);
 
 $text-color: var(--text-color);
-
+$layout-color: var(--layout-color);
 $header-color: var(--header-color);
 $space-color: var(--space-color);
 $border-color: var(--border-color);
+
+$box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
+// $box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;

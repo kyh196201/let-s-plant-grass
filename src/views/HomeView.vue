@@ -54,20 +54,27 @@
 
 <style lang="scss" scoped>
   .home {
-    padding: 1rem;
+    padding: 1.6rem;
 
     &__contents {
-      margin: 0 -1rem;
-
       li {
         padding: 1rem;
-        border-bottom: 1rem solid $space-color;
+        border-radius: 1rem;
+        background-color: $white;
+        box-shadow: $box-shadow;
+
+        &:not(:last-of-type) {
+          margin-bottom: 1rem;
+        }
       }
     }
 
     &__nav {
-      padding: 0 1rem;
-      margin-bottom: 1rem;
+      margin: 0 0 1rem 0;
+      padding: 1rem;
+      border-radius: 1rem;
+      background-color: $white;
+      box-shadow: $box-shadow;
 
       &__buttons {
         display: flex;

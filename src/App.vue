@@ -21,6 +21,7 @@
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    background-color: $layout-color;
   }
 
   .header {
@@ -28,12 +29,13 @@
     top: 0;
     left: 0;
     width: 100%;
-    padding: 1rem;
-    background-color: $header-color;
-    box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
+    padding: 1.6rem;
+    box-shadow: 0px 1px 8px -3px rgb(31 24 24 / 23%);
+    -webkit-box-shadow: 0px 1px 8px -3px rgb(31 24 24 / 23%);
+    -moz-box-shadow: 0px 1px 8px -3px rgb(31 24 24 / 23%);
 
     &__title {
-      font-size: 2.4rem;
+      font-size: 2rem;
     }
   }
 
