@@ -4,7 +4,10 @@
     <header class="header">
       <!-- TODO: 로고 추가 -->
       <h1 class="header__title">
-        <router-link to="/">깃허브 잔디 심기 🌱</router-link>
+        <router-link to="/">
+          <font-awesome-icon icon="fa-brands fa-github" size="lg" />
+          깃허브 잔디 심기
+        </router-link>
       </h1>
     </header>
 
