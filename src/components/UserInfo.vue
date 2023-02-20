@@ -28,8 +28,8 @@
 
     &__avatar {
       overflow: hidden;
-      width: 5rem;
-      height: 5rem;
+      width: 6rem;
+      height: 6rem;
       border-radius: 100%;
 
       img {

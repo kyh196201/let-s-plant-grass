@@ -13,46 +13,78 @@
         </div>
       </nav>
 
-      <ul>
-        <li v-for="user in users" :key="user.email">
-          <user-box :week="week" :user="user"></user-box>
-        </li>
-      </ul>
+      <section class="home__dashboard">
+        <template v-if="fetches.events === 'success' && fetches.users === 'success'">
+          <dash-board v-if="users.length" :users="users" />
+        </template>
+
+        <!-- TODO: skeleton component -->
+        <p v-else-if="fetches.events === 'loading' || fetches.users === 'loading'">Loading...</p>
+
+        <!-- TODO: error component -->
+        <p v-else-if="fetches.events === 'failed' || fetches.users === 'failed'">Error</p>
+      </section>
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue';
-  import UserBox from '@/components/UserBox.vue';
-  import { fetchUser } from '@/api';
+  import { ref, onMounted, reactive } from 'vue';
+  import DashBoard from '@/components/DashBoard.vue';
+  import { fetchUser } from '@/api/local-api';
   import useWeek from '@/composables/useWeek';
   import type { User } from '@/interfaces/user';
+  import type { FetchState } from '@/constants/settings';
 
-  const { week, moveToPrevWeek, weekString, moveToCurrentWeek } = useWeek();
+  interface Fetches {
+    users: FetchState;
+    events: FetchState;
+  }
+
+  const fetches = reactive<Fetches>({
+    events: 'wait',
+    users: 'wait',
+  });
+
+  const { moveToPrevWeek, weekString, moveToCurrentWeek } = useWeek();
 
   const userIds = ['kyh196201', 'JEONMINJU', 'teller2016', 'JOANNASHIN'];
-
-  const isLoading = ref(false);
 
   const users = ref<User[]>([]);
 
   const fetchAllUsers = async function fetchAllUsers() {
     try {
-      isLoading.value = true;
+      fetches.users = 'loading';
 
       const promises = userIds.map((id) => fetchUser(id));
 
       users.value = await Promise.all(promises);
+
+      fetches.users = 'success';
     } catch (error) {
+      fetches.users = 'failed';
       alert(error);
-    } finally {
-      isLoading.value = false;
+    }
+  };
+
+  const fetchAllEvents = async function fetchAllUsers() {
+    try {
+      fetches.events = 'loading';
+
+      const promises = userIds.map((id) => fetchUser(id));
+
+      users.value = await Promise.all(promises);
+
+      fetches.events = 'success';
+    } catch (error) {
+      fetches.events = 'failed';
+      alert(error);
     }
   };
 
   onMounted(() => {
     fetchAllUsers();
+    fetchAllEvents();
   });
 </script>
 
@@ -60,22 +92,9 @@
   .home {
     padding: 1.6rem;
 
-    &__contents {
-      li {
-        padding: 1rem;
-        border-radius: 1rem;
-        background-color: $white;
-        box-shadow: $box-shadow;
-
-        &:not(:last-of-type) {
-          margin-bottom: 1rem;
-        }
-      }
-    }
-
     &__nav {
-      margin: 0 0 1rem 0;
-      padding: 1rem;
+      margin: 0 0 1.6rem 0;
+      padding: 1.6rem;
       border-radius: 1rem;
       background-color: $white;
       box-shadow: $box-shadow;
