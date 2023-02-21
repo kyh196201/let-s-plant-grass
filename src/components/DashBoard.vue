@@ -1,8 +1,11 @@
 <template>
   <ul class="dashboard">
-    <li v-for="user in users" :key="user.email" class="dashboard__item">
+    <li v-for="(user, index) in users" :key="user.email" class="dashboard__item">
       <user-info :user="user"></user-info>
-      <div class="dashboard__count">이번 주에 심은 잔디: <em>3</em>개</div>
+      <div class="dashboard__count">
+        이번 주에 심은 잔디:
+        <em> {{ commitCounts[index] || 0 }} </em>개
+      </div>
     </li>
   </ul>
 </template>
@@ -13,10 +16,12 @@
 
   interface Props {
     users: User[];
-    // TODO: events
+    commitCounts?: number[];
   }
 
-  defineProps<Props>();
+  withDefaults(defineProps<Props>(), {
+    commitCounts: () => [],
+  });
 </script>
 
 <style scoped lang="scss">

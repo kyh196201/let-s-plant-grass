@@ -14,15 +14,15 @@
       </nav>
 
       <section class="home__dashboard">
-        <template v-if="fetches.events === 'success' && fetches.users === 'success'">
-          <dash-board v-if="users.length" :users="users" />
+        <template v-if="fetches.commitCounts === 'success' && fetches.users === 'success'">
+          <dash-board :users="users" :commit-counts="commitCounts" />
         </template>
 
         <!-- TODO: skeleton component -->
-        <p v-else-if="fetches.events === 'loading' || fetches.users === 'loading'">Loading...</p>
+        <p v-else-if="fetches.commitCounts === 'loading' || fetches.users === 'loading'">Loading...</p>
 
         <!-- TODO: error component -->
-        <p v-else-if="fetches.events === 'failed' || fetches.users === 'failed'">Error</p>
+        <p v-else-if="fetches.commitCounts === 'failed' || fetches.users === 'failed'">Error</p>
       </section>
     </div>
   </section>
@@ -31,32 +31,39 @@
 <script setup lang="ts">
   import { ref, onMounted, reactive } from 'vue';
   import DashBoard from '@/components/DashBoard.vue';
-  import { fetchUser } from '@/api/local-api';
+  import { fetchEvents, fetchUser } from '@/api';
   import useWeek from '@/composables/useWeek';
+  import { isPushEvent } from '@/lib/github';
+  import { isBetween } from '@/lib/date';
   import type { User } from '@/interfaces/user';
   import type { FetchState } from '@/constants/settings';
 
   interface Fetches {
     users: FetchState;
-    events: FetchState;
+    commitCounts: FetchState;
   }
 
   const fetches = reactive<Fetches>({
-    events: 'wait',
+    commitCounts: 'wait',
     users: 'wait',
   });
 
-  const { moveToPrevWeek, weekString, moveToCurrentWeek } = useWeek();
+  const { moveToPrevWeek, weekString, moveToCurrentWeek, week } = useWeek();
 
-  const userIds = ['kyh196201', 'JEONMINJU', 'teller2016', 'JOANNASHIN'];
+  function isInWeek(date: string, startOfWeek: Date, endOfWeek: Date) {
+    return isBetween(date, startOfWeek, endOfWeek);
+  }
+
+  const usernames = ['kyh196201', 'JEONMINJU', 'teller2016', 'JOANNASHIN'];
 
   const users = ref<User[]>([]);
+  const commitCounts = ref<number[]>([]);
 
   const fetchAllUsers = async function fetchAllUsers() {
     try {
       fetches.users = 'loading';
 
-      const promises = userIds.map((id) => fetchUser(id));
+      const promises = usernames.map((name) => fetchUser(name));
 
       users.value = await Promise.all(promises);
 
@@ -67,24 +74,78 @@
     }
   };
 
-  const fetchAllEvents = async function fetchAllUsers() {
+  /**
+   * 사용자 별로 이번주에 올린 커밋 개수 반환
+   *
+   * @param username 사용자 이름(아이디)
+   */
+  const getCommitCountThisWeek = async function getCommitCountThisWeek(username: string): Promise<number> {
+    const response = await fetchEvents({
+      username,
+      page: 1,
+      perPage: 100,
+    });
+
+    if (!response?.length) {
+      return 0;
+    }
+
+    const { start, end } = week.value;
+
+    let count = 0;
+
+    response.filter(isPushEvent).forEach((event) => {
+      if (isInWeek(event.created_at, start, end)) {
+        count += event.payload.commits.length;
+      }
+    });
+
+    return count;
+  };
+
+  /**
+   * 모든 사용자의 이번주에 올린 커밋 개수 반환
+   */
+  const fetchUsersCommitCounts = async function fetchUsersCommitCounts() {
     try {
-      fetches.events = 'loading';
+      fetches.commitCounts = 'loading';
 
-      const promises = userIds.map((id) => fetchUser(id));
+      const promises: Promise<{ count: number }>[] = usernames.map((name) => {
+        return getCommitCountThisWeek(name)
+          .then((count) => {
+            return { count };
+          })
+          .catch(() => {
+            return { count: 0 };
+          });
+      });
 
-      users.value = await Promise.all(promises);
+      const results = await Promise.allSettled(promises);
 
-      fetches.events = 'success';
+      commitCounts.value = results.map((result) => {
+        if (result.status === 'fulfilled') {
+          return result.value.count;
+        }
+
+        return result.reason.count as number;
+      });
+
+      fetches.commitCounts = 'success';
     } catch (error) {
-      fetches.events = 'failed';
-      alert(error);
+      console.error('fetchUsersCommitCounts has error', error);
+      fetches.commitCounts = 'failed';
     }
   };
 
+  // TODO: 너무 비효율적
+  // 커밋 개수를 한 번 가져오고, week을 통해 computed로 커밋 개수를 연산하는 것이 좋을 것 같음
+  // watch(week, () => {
+  //   fetchUsersCommitCounts();
+  // });
+
   onMounted(() => {
     fetchAllUsers();
-    fetchAllEvents();
+    fetchUsersCommitCounts();
   });
 </script>
 
