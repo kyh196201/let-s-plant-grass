@@ -30,20 +30,20 @@ interface GithubEvent {
 // 사용자 이벤트 조회하기
 const fetchEvents = async function fetchEvents({
   username,
-  page,
+  page = 1,
   perPage = 100,
 }: {
   username: string;
   page: number;
   perPage?: number;
 }) {
-  const response = await fetch('local_data/events.json');
+  const response = await fetch(`local_data/${username}_events.json`);
 
   return await response.json();
 };
 
 const fetchUser = async function fetchUser(username: string) {
-  const response = await fetch('local_data/user.json');
+  const response = await fetch(`local_data/${username}.json`);
   const data = await response.json();
 
   return {

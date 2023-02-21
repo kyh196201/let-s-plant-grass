@@ -30,7 +30,7 @@ interface GithubEvent {
 // 사용자 이벤트 조회하기
 const fetchEvents = async function fetchEvents({
   username,
-  page,
+  page = 1,
   perPage = 100,
 }: {
   username: string;
