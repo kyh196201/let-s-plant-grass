@@ -6,8 +6,11 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "lib": [
+      "DOM",
+      "es2020"
+    ],
   },
-
   "references": [
     {
       "path": "./tsconfig.config.json"
