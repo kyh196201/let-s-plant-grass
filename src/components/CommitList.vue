@@ -16,7 +16,7 @@
   import { computed } from 'vue';
   import CommitItem from './CommitItem.vue';
   import { MAX_COMMITS_LENGTH } from '@/constants/settings';
-  import type { Commit } from '@/interfaces/commit';
+  import type Commit from '@/interfaces/commit';
 
   const props = defineProps<{
     commits: Commit[];

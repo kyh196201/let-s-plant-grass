@@ -27,7 +27,7 @@
   import CommitList from './CommitList.vue';
   import { isBetween } from '@/lib/date';
   import type { User } from '@/interfaces/user';
-  import type { Commit } from '@/interfaces/commit';
+  import type Commit from '@/interfaces/commit';
   import type { GithubEvent, GithubCommit } from '@/api';
   import type { Week } from '@/composables/useWeek';
 

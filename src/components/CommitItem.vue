@@ -8,7 +8,7 @@
 <script setup lang="ts">
   import { computed } from 'vue';
   import { formatDate } from '@/lib/date';
-  import type { Commit } from '@/interfaces/commit';
+  import type Commit from '@/interfaces/commit';
 
   const props = defineProps<{
     commit: Commit;
