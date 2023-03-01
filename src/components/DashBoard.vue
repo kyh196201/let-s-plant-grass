@@ -1,11 +1,11 @@
 <template>
   <ul class="dashboard">
-    <template v-for="(user, name, index) in users" :key="index">
+    <template v-for="(user, name, index) in users" :key="`${name}-${index}`">
       <li v-if="user.info" class="dashboard__item">
         <user-info :user="user.info"></user-info>
         <div class="dashboard__count">
           이번 주에 심은 잔디:
-          <em> {{ user.commits.length }} </em>개
+          <em> {{ filterCommitsInThisWeek(user.commits, week).length }} </em>개
         </div>
       </li>
     </template>
@@ -14,8 +14,10 @@
 
 <script setup lang="ts">
   import UserInfo from './UserInfo.vue';
+  import { isBetween } from '@/lib/date';
   import type { User } from '@/interfaces/user';
-  import type { Commit } from '@/interfaces/commit';
+  import type Commit from '@/interfaces/commit';
+  import type { Week } from '@/composables/useWeek';
 
   export interface DashBoardUsers {
     [key: string]: {
@@ -26,9 +28,20 @@
 
   interface Props {
     users: DashBoardUsers;
+    week: Week;
   }
 
   defineProps<Props>();
+
+  const isInWeek = function isInWeek(date: string, startOfWeek: Date, endOfWeek: Date) {
+    return isBetween(date, startOfWeek, endOfWeek);
+  };
+
+  const filterCommitsInThisWeek = (commits: Commit[], week: Week): Commit[] => {
+    const { start, end } = week;
+
+    return commits.filter((commit) => isInWeek(commit.createAt, start, end));
+  };
 </script>
 
 <style scoped lang="scss">

@@ -1,5 +1,6 @@
-import type { User } from '@/interfaces/user';
 import { Octokit } from 'octokit';
+import { getCommitsFromResponse, isPushEvent } from '@/utils/github';
+import type { User } from '@/interfaces/user';
 
 //#region octokit instance
 // https://github.com/octokit/core.js#readme
@@ -28,13 +29,13 @@ interface GithubEvent {
 }
 
 // 사용자 이벤트 조회하기
-const fetchEvents = async function fetchEvents({
+export const fetchEvents = async function fetchEvents({
   username,
   page = 1,
   perPage = 100,
 }: {
   username: string;
-  page: number;
+  page?: number;
   perPage?: number;
 }) {
   const response = await octokit.request('GET /users/{username}/events{?per_page,page}', {
@@ -51,7 +52,32 @@ const fetchEvents = async function fetchEvents({
   return response.data as GithubEvent[];
 };
 
-const fetchUser = async function fetchUser(username: string) {
+// 사용자 커밋 목록 조회하기
+export const fetchCommits = async function fetchUserCommits({
+  username,
+  page = 1,
+  perPage = 100,
+}: {
+  username: string;
+  page?: number;
+  perPage?: number;
+}) {
+  const response = await fetchEvents({ username, page, perPage });
+
+  const pushEvents = response.filter(isPushEvent);
+
+  const commits = getCommitsFromResponse(pushEvents);
+
+  return commits;
+};
+
+/**
+ * 사용자 정보 조회하기
+ *
+ * @param username 사용자 id
+ * @returns 사용자 정보
+ */
+export const fetchUser = async function fetchUser(username: string) {
   const response = await octokit.request('GET /users/{username}', {
     username,
   });
@@ -73,8 +99,6 @@ const fetchUser = async function fetchUser(username: string) {
 
   return user;
 };
-
-export { fetchEvents, fetchUser };
 
 export type { GithubCommit, GithubEvent };
 
