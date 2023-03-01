@@ -1,10 +1,11 @@
 <template>
   <ul class="dashboard">
     <template v-for="(user, name, index) in users" :key="`${name}-${index}`">
-      <li v-if="user.info" class="dashboard__item">
+      <li v-if="user.info" class="dashboard-item">
         <user-info :user="user.info"></user-info>
-        <div class="dashboard__count">
-          이번 주에 심은 잔디:
+
+        <div class="dashboard-item__count">
+          심은 잔디:
           <em> {{ filterCommitsInThisWeek(user.commits, week).length }} </em>개
         </div>
       </li>
@@ -51,7 +52,7 @@
     box-shadow: $box-shadow;
     border-radius: 1rem;
 
-    &__item {
+    .dashboard-item {
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -60,16 +61,20 @@
       &:not(:last-child) {
         border-bottom: 1px dotted #dddddd;
       }
-    }
 
-    &__count {
-      margin-left: 1rem;
-      font-size: 1.4rem;
-
-      em {
-        font-weight: bold;
+      &__icon {
         color: $green;
-        font-size: 1.2em;
+      }
+
+      &__count {
+        margin-left: 1rem;
+        font-size: 1.4rem;
+
+        em {
+          font-weight: bold;
+          color: $green;
+          font-size: 1.2em;
+        }
       }
     }
   }

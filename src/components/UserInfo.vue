@@ -7,7 +7,7 @@
     </a>
 
     <div class="user__info">
-      <span class="user__id">{{ user.id }}</span>
+      <strong class="user__id">{{ user.id }}</strong>
       <span class="user__name">{{ user.name }}</span>
     </div>
   </div>
