@@ -1,27 +1,34 @@
 <template>
   <ul class="dashboard">
-    <li v-for="(user, index) in users" :key="user.email" class="dashboard__item">
-      <user-info :user="user"></user-info>
-      <div class="dashboard__count">
-        이번 주에 심은 잔디:
-        <em> {{ commitCounts[index] || 0 }} </em>개
-      </div>
-    </li>
+    <template v-for="(user, name, index) in users" :key="index">
+      <li v-if="user.info" class="dashboard__item">
+        <user-info :user="user.info"></user-info>
+        <div class="dashboard__count">
+          이번 주에 심은 잔디:
+          <em> {{ user.commits.length }} </em>개
+        </div>
+      </li>
+    </template>
   </ul>
 </template>
 
 <script setup lang="ts">
   import UserInfo from './UserInfo.vue';
   import type { User } from '@/interfaces/user';
+  import type { Commit } from '@/interfaces/commit';
 
-  interface Props {
-    users: User[];
-    commitCounts?: number[];
+  export interface DashBoardUsers {
+    [key: string]: {
+      info: User | null;
+      commits: Commit[];
+    };
   }
 
-  withDefaults(defineProps<Props>(), {
-    commitCounts: () => [],
-  });
+  interface Props {
+    users: DashBoardUsers;
+  }
+
+  defineProps<Props>();
 </script>
 
 <style scoped lang="scss">

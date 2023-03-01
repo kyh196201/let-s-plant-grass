@@ -15,7 +15,7 @@
 
       <section class="home__dashboard">
         <template v-if="fetches.commitCounts === 'success' && fetches.users === 'success'">
-          <dash-board :users="users" :commit-counts="commitCounts" />
+          <dash-board :users="users" />
         </template>
 
         <!-- TODO: skeleton component -->
@@ -30,42 +30,80 @@
 
 <script setup lang="ts">
   import { ref, onMounted, reactive } from 'vue';
-  import DashBoard from '@/components/DashBoard.vue';
   import { fetchEvents, fetchUser } from '@/api';
   import useWeek from '@/composables/useWeek';
   import { isPushEvent } from '@/lib/github';
   import { isBetween } from '@/lib/date';
-  import type { User } from '@/interfaces/user';
+  import USER_NAMES from '@/constants/user-names';
   import type { FetchState } from '@/constants/settings';
+
+  // components
+  import DashBoard, { type DashBoardUsers } from '@/components/DashBoard.vue';
 
   interface Fetches {
     users: FetchState;
     commitCounts: FetchState;
   }
 
+  //#region fetches
   const fetches = reactive<Fetches>({
     commitCounts: 'wait',
     users: 'wait',
   });
+  //#endregion
 
+  //#region week
   const { moveToPrevWeek, weekString, moveToCurrentWeek, week } = useWeek();
 
   function isInWeek(date: string, startOfWeek: Date, endOfWeek: Date) {
     return isBetween(date, startOfWeek, endOfWeek);
   }
+  //#endregion
 
-  const usernames = ['kyh196201', 'JEONMINJU', 'teller2016', 'JOANNASHIN'];
+  //#region users
+  const createUsersInitialState = function createUsersInitialState(names: string[]): DashBoardUsers {
+    if (!names.length) {
+      return {} as DashBoardUsers;
+    }
 
-  const users = ref<User[]>([]);
+    return names.reduce((users, name) => {
+      return {
+        ...users,
+        [name]: {
+          info: null,
+          commits: [],
+        },
+      };
+    }, {} as DashBoardUsers);
+  };
+
+  const users = reactive(createUsersInitialState(USER_NAMES));
+  //#endregion
+
   const commitCounts = ref<number[]>([]);
 
-  const fetchAllUsers = async function fetchAllUsers() {
+  //#region api
+  const fetchAllUsers = async function fetchAllUsers(usernames: string[]) {
     try {
       fetches.users = 'loading';
 
-      const promises = usernames.map((name) => fetchUser(name));
+      const promises = usernames.map((name) => {
+        return fetchUser(name)
+          .then((user) => ({ name, user }))
+          .catch(() => ({ name, user: null }));
+      });
 
-      users.value = await Promise.all(promises);
+      const results = await Promise.allSettled(promises);
+
+      results.forEach((result) => {
+        if (result.status === 'rejected') {
+          return;
+        }
+
+        const { name, user } = result.value;
+
+        users[name].info = user;
+      });
 
       fetches.users = 'success';
     } catch (error) {
@@ -106,7 +144,7 @@
   /**
    * 모든 사용자의 이번주에 올린 커밋 개수 반환
    */
-  const fetchUsersCommitCounts = async function fetchUsersCommitCounts() {
+  const fetchUsersCommitCounts = async function fetchUsersCommitCounts(usernames: string[]) {
     try {
       fetches.commitCounts = 'loading';
 
@@ -127,7 +165,7 @@
           return result.value.count;
         }
 
-        return result.reason.count as number;
+        return 0;
       });
 
       fetches.commitCounts = 'success';
@@ -136,6 +174,7 @@
       fetches.commitCounts = 'failed';
     }
   };
+  //#endregion
 
   // TODO: 너무 비효율적
   // 커밋 개수를 한 번 가져오고, week을 통해 computed로 커밋 개수를 연산하는 것이 좋을 것 같음
@@ -144,8 +183,8 @@
   // });
 
   onMounted(() => {
-    fetchAllUsers();
-    fetchUsersCommitCounts();
+    fetchAllUsers(USER_NAMES);
+    fetchUsersCommitCounts(USER_NAMES);
   });
 </script>
 
