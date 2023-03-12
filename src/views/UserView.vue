@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, computed } from 'vue';
+  import { onMounted, computed, onBeforeUnmount } from 'vue';
   import { useRoute } from 'vue-router';
   import UserInfo from '@/components/UserInfo.vue';
   import CommitBox from '@/components/CommitBox.vue';
@@ -74,8 +74,11 @@
   const userId = computed(() => route.params.id as string);
   //#endregion
 
+  //#region user
   const { fetchState: userFetchState, user, fetchUser } = useUser(userId);
+  //#endregion
 
+  //#region commits
   const { fetchState: commitsFetchState, commits, fetchCommits } = useCommits(userId);
 
   const formatCreateAt = (createAt: string) => formatDate(createAt, 'DATE');
@@ -87,14 +90,25 @@
       return formatCreateAt(item.createAt);
     });
   });
+  //#endregion
+
+  const changeHeaderBackground = function changeHeaderBackground(isMounted = true) {
+    const header = document.querySelector('header');
+
+    if (!header) return;
+
+    header.style.backgroundColor = isMounted ? 'rgb(255, 232, 74)' : '';
+  };
 
   onMounted(() => {
+    changeHeaderBackground();
     fetchUser();
     fetchCommits();
   });
 
-  // TODO: header style change
-  // background: rgb(255, 232, 74);
+  onBeforeUnmount(() => {
+    changeHeaderBackground(false);
+  });
 </script>
 
 <style scoped lang="scss">
