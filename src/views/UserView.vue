@@ -109,8 +109,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 1.6rem 1.6rem 6.4rem;
-      // background: rgb(255, 232, 74);
-      background: linear-gradient(135deg, rgba(255, 232, 74, 1) 26%, rgba(255, 218, 75, 1) 58%);
+      background: linear-gradient(135deg, $yellow 26%, $yellow-dark 58%);
     }
 
     &__user-links {
@@ -143,7 +142,7 @@
 
         em {
           margin-right: 0.5rem;
-          color: #e0817a;
+          color: $penalty-color;
           font-size: 2.4rem;
           font-weight: bold;
         }
