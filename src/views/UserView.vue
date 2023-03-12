@@ -57,12 +57,18 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted, computed } from 'vue';
+  import { useRoute } from 'vue-router';
   import UserInfo from '@/components/UserInfo.vue';
   import CommitList from '@/components/CommitList.vue';
   import useUser from '@/composables/useUser';
 
-  const { fetchState: userFetchState, user, fetchUser } = useUser('kyh196201');
+  //#region route
+  const route = useRoute();
+  const userId = computed(() => route.params.id as string);
+  //#endregion
+
+  const { fetchState: userFetchState, user, fetchUser } = useUser(userId);
 
   const commits = ref<any[]>([]);
 

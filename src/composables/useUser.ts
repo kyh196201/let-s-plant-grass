@@ -1,10 +1,12 @@
-import { ref } from 'vue';
+import { ref, unref, type Ref } from 'vue';
 import { fetchUser as requestUser } from '@/api/local-api';
 import type { FetchState } from '@/constants/settings';
 import type { User } from '@/interfaces/user';
 
-export default function useUser(userId: string) {
+export default function useUser(id: string | Ref<string>) {
   const fetchState = ref<FetchState>('wait');
+
+  const userId = unref(id);
 
   const user = ref<User | null>(null);
 
