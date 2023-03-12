@@ -2,7 +2,9 @@
   <ul class="dashboard">
     <template v-for="(user, name, index) in users" :key="`${name}-${index}`">
       <li v-if="user.info" class="dashboard-item">
-        <user-info :user="user.info"></user-info>
+        <router-link :to="`/user/${user.info.id}`">
+          <user-info :user="user.info"></user-info>
+        </router-link>
 
         <div class="dashboard-item__count">
           심은 잔디:

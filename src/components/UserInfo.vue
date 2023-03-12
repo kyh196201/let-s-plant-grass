@@ -1,10 +1,8 @@
 <template>
   <div class="user">
-    <a :href="user.homePage" target="_blank">
-      <figure class="user__avatar">
-        <img :src="user.avatar" :alt="user.name" />
-      </figure>
-    </a>
+    <figure class="user__avatar">
+      <img :src="user.avatar" :alt="user.name" />
+    </figure>
 
     <div class="user__info">
       <strong class="user__id">{{ user.id }}</strong>
