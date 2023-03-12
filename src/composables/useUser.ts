@@ -1,5 +1,5 @@
 import { ref, unref, type Ref } from 'vue';
-import { fetchUser as requestUser } from '@/api/local-api';
+import { fetchUser as requestUser } from '@/api';
 import type { FetchState } from '@/constants/settings';
 import type { User } from '@/interfaces/user';
 

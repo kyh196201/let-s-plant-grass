@@ -33,23 +33,26 @@
     <section class="user-view__contents">
       <h2 class="sr-only">커밋 목록</h2>
 
-      <div class="user-view__commits">
-        <ul v-if="commits.length">
-          <li class="user-view__commit-box">
-            <article class="commit-box">
-              <time class="commit-box__date" datetime="">2023년 3월 12일</time>
-              <CommitList :commits="commits" />
-            </article>
-          </li>
-        </ul>
+      <template v-if="commitsFetchState === 'loading'"> loading commits... </template>
 
-        <!-- empty -->
-        <div v-else class="user-view__empty">
-          <div class="empty">
-            <p class="empty__text">심은 잔디가 없습니다. 😂</p>
+      <template v-else-if="commitsFetchState === 'success'">
+        <div class="user-view__commits">
+          <ul v-if="Object.keys(groupedCommits).length">
+            <template v-for="(group, key) in groupedCommits" :key="key">
+              <li class="user-view__commit-box">
+                <CommitBox :date="(key as string)" :commits="group" />
+              </li>
+            </template>
+          </ul>
+
+          <!-- empty -->
+          <div v-else class="user-view__empty">
+            <div class="empty">
+              <p class="empty__text">심은 잔디가 없습니다. 😂</p>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
     </section>
 
     <!-- TODO: go to top -->
@@ -57,11 +60,14 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, computed } from 'vue';
+  import { onMounted, computed } from 'vue';
   import { useRoute } from 'vue-router';
   import UserInfo from '@/components/UserInfo.vue';
-  import CommitList from '@/components/CommitList.vue';
+  import CommitBox from '@/components/CommitBox.vue';
   import useUser from '@/composables/useUser';
+  import useCommits from '@/composables/useCommits';
+  import { groupBy } from 'lodash-es';
+  import { formatDate } from '@/lib/date';
 
   //#region route
   const route = useRoute();
@@ -70,10 +76,21 @@
 
   const { fetchState: userFetchState, user, fetchUser } = useUser(userId);
 
-  const commits = ref<any[]>([]);
+  const { fetchState: commitsFetchState, commits, fetchCommits } = useCommits(userId);
+
+  const formatCreateAt = (createAt: string) => formatDate(createAt, 'DATE');
+
+  const groupedCommits = computed(() => {
+    if (!commits.value.length) return {};
+
+    return groupBy(commits.value, (item) => {
+      return formatCreateAt(item.createAt);
+    });
+  });
 
   onMounted(() => {
     fetchUser();
+    fetchCommits();
   });
 
   // TODO: header style change
@@ -137,23 +154,7 @@
     }
 
     &__commit-box {
-      padding: 1rem;
-      border-radius: 1rem;
-      background-color: $white;
-      box-shadow: $box-shadow;
       margin-bottom: 1rem;
-
-      .commit-box {
-        &__date {
-          display: inline-block;
-          font-size: 1.4rem;
-          margin-bottom: 1rem;
-        }
-
-        &__list {
-          font-size: 1.6rem;
-        }
-      }
     }
 
     &__empty {

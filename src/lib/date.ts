@@ -13,6 +13,7 @@ dayjs.locale({
 export const FORMATS = {
   DATE_TIME: 'YYYY.MM.DD HH:mm:ss',
   DATE: 'YYYY.MM.DD',
+  DATE_STRING: 'YYYY년 MM월 DD일',
 } as const;
 
 export function formatDate(value: Date | string, formatKey: keyof typeof FORMATS = 'DATE_TIME'): string {
@@ -23,6 +24,14 @@ export function formatDate(value: Date | string, formatKey: keyof typeof FORMATS
   const format = FORMATS[formatKey];
 
   return date.format(format);
+}
+
+export function toISOString(value: Date | string) {
+  const date = dayjs(value);
+
+  if (!date.isValid()) return '';
+
+  return date.toISOString();
 }
 
 export function getToday(): Date {
