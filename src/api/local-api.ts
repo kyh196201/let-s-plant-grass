@@ -38,7 +38,7 @@ export const fetchEvents = async function fetchEvents({
   page?: number;
   perPage?: number;
 }) {
-  const response = await fetch(`local_data/${username}_events.json`);
+  const response = await fetch(`/local_data/${username}_events.json`);
 
   return await response.json();
 };
@@ -63,7 +63,7 @@ export const fetchCommits = async function fetchUserCommits({
 };
 
 export const fetchUser = async function fetchUser(username: string) {
-  const response = await fetch(`local_data/${username}.json`);
+  const response = await fetch(`/local_data/${username}.json`);
   const data = await response.json();
 
   return {

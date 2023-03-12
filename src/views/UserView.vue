@@ -4,15 +4,19 @@
     <section class="user-view__user">
       <h2 class="sr-only">사용자 정보 영역</h2>
 
-      <div class="user-view__user-info">
-        <user-info :user="user"></user-info>
-      </div>
+      <template v-if="userFetchState === 'loading'"> loading user... </template>
 
-      <nav class="user-view__user-links">
-        <a :href="user.homePage" target="_blank" title="깃허브 주소로 이동" class="user-links__github">
-          <span class="sr-only">깃허브 주소</span>
-        </a>
-      </nav>
+      <template v-if="userFetchState === 'success' && user">
+        <div class="user-view__user-info">
+          <user-info :user="user"></user-info>
+        </div>
+
+        <nav class="user-view__user-links">
+          <a :href="user.homePage" target="_blank" title="깃허브 페이지로 이동" class="user-links__github">
+            <span class="sr-only">깃허브 페이지</span>
+          </a>
+        </nav>
+      </template>
     </section>
 
     <!-- 벌금 -->
@@ -30,17 +34,17 @@
       <h2 class="sr-only">커밋 목록</h2>
 
       <div class="user-view__commits">
-        <ul v-if="false">
+        <ul v-if="commits.length">
           <li class="user-view__commit-box">
             <article class="commit-box">
               <time class="commit-box__date" datetime="">2023년 3월 12일</time>
-              <CommitList :commits="commitList" />
+              <CommitList :commits="commits" />
             </article>
           </li>
         </ul>
 
         <!-- empty -->
-        <div class="user-view__empty">
+        <div v-else class="user-view__empty">
           <div class="empty">
             <p class="empty__text">심은 잔디가 없습니다. 😂</p>
           </div>
@@ -53,50 +57,18 @@
 </template>
 
 <script setup lang="ts">
-  import { reactive, ref } from 'vue';
+  import { ref, onMounted } from 'vue';
   import UserInfo from '@/components/UserInfo.vue';
   import CommitList from '@/components/CommitList.vue';
+  import useUser from '@/composables/useUser';
 
-  const user: any = reactive({
-    avatar: 'https://avatars.githubusercontent.com/u/53055051?v=4',
-    email: '',
-    id: 'kyh196201',
-    name: 'Seungwoo Kim',
-    homePage: 'https://github.com/kyh196201',
+  const { fetchState: userFetchState, user, fetchUser } = useUser('kyh196201');
+
+  const commits = ref<any[]>([]);
+
+  onMounted(() => {
+    fetchUser();
   });
-
-  const commitList = ref<any[]>([
-    {
-      createAt: '2023-02-16T09:55:13Z',
-      message: 'api 테스트 중',
-      url: 'https://api.github.com/repos/JEONMINJU/jmju_personal-project/commits/040de0e4325c6b69921518f9b533ee69354d92b2',
-      sha: '040de0e4325c6b69921518f9b533ee69354d92b2',
-    },
-    {
-      createAt: '2023-02-16T09:55:13Z',
-      message: "Merge branch 'main' of https://github.com/JEONMINJU/jmju_personal-project",
-      url: 'https://api.github.com/repos/JEONMINJU/jmju_personal-project/commits/e1eeef8820b8504a27a2e8d1c937cabdc91c304e',
-      sha: 'e1eeef8820b8504a27a2e8d1c937cabdc91c304e',
-    },
-    {
-      createAt: '2023-02-12T12:15:28Z',
-      message: 'moment > dayjs 변경',
-      url: 'https://api.github.com/repos/JEONMINJU/jmju_personal-project/commits/9c25e7ae74fa58b8051bb457e6254c62702b6da4',
-      sha: '9c25e7ae74fa58b8051bb457e6254c62702b6da4',
-    },
-    {
-      createAt: '2023-02-08T06:41:29Z',
-      message: 'push test',
-      url: 'https://api.github.com/repos/JEONMINJU/jmju_personal-project/commits/f934cf9b509206cc82e1886992cf411f7a7bccda',
-      sha: 'f934cf9b509206cc82e1886992cf411f7a7bccda',
-    },
-    {
-      createAt: '2023-02-06T07:44:35Z',
-      message: 'search bar reset button add',
-      url: 'https://api.github.com/repos/JEONMINJU/jmju_personal-project/commits/3feb20381fafc36f8930b0064b3fa8c7c8d62bdb',
-      sha: '3feb20381fafc36f8930b0064b3fa8c7c8d62bdb',
-    },
-  ]);
 
   // TODO: header style change
   // background: rgb(255, 232, 74);
