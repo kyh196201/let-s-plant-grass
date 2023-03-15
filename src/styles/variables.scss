@@ -6,6 +6,8 @@
   --green-color: #71c583;
   --yellow-color: rgb(255, 232, 74);
   --yellow-dark-color: rgb(255, 218, 75);
+  --grey-ccc: #cccccc;
+  --grey-eee: #eeeeee;
 
   // colors for element
   --text-color: #212222;
@@ -25,6 +27,8 @@ $white: var(--white-color);
 $green: var(--green-color);
 $yellow: var(--yellow-color);
 $yellow-dark: var(--yellow-dark-color);
+$greyccc: var(--grey-ccc);
+$greyeee: var(--grey-eee);
 
 $text-color: var(--text-color);
 $layout-color: var(--layout-color);

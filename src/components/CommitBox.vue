@@ -70,7 +70,7 @@
       position: relative;
       padding: 1rem 3.35rem 1rem 1rem;
       width: 100%;
-      background-color: #eeeeee;
+      background-color: $greyeee;
       transition: background-color 0.4s linear;
 
       &::after {
@@ -109,7 +109,7 @@
     &--is-open {
       .commit-box {
         &__panel {
-          background-color: #cccccc;
+          background-color: $greyccc;
 
           &::after {
             transform: rotate(180deg);
