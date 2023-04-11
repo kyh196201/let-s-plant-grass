@@ -23,8 +23,9 @@ const octokit = new Octokit({
 });
 //#endregion
 
+// #region apis
 // 저장소 커밋 목록 조회하기
-export async function getRepositoryCommits(userName: string, repoName: string) {
+export const getRepositoryCommits = async function getRepositoryCommits(userName: string, repoName: string) {
   // https://api.github.com/repos/user name/repository name/commits
   const url = `/repos/${userName}/${repoName}/commits`;
 
@@ -35,7 +36,7 @@ export async function getRepositoryCommits(userName: string, repoName: string) {
   });
 
   return response.data as GithubRepositoryCommit[];
-}
+};
 
 // 사용자 이벤트 조회하기
 export const fetchEvents = async function fetchEvents({
@@ -156,5 +157,6 @@ export const fetchUser = async function fetchUser(username: string) {
 
   return user;
 };
+// #endregion
 
 export default {};
