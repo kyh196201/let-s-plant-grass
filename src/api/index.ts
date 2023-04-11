@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Octokit } from 'octokit';
 import Commit from '@/interfaces/commit';
 import { getCommitsFromResponse } from '@/utils/github';
+import { createCachedFunction } from '@/utils/cache';
 import type { User } from '@/interfaces/user';
 import type { GithubEvent, GithubRepositoryCommit } from '@/types/github.types';
 
@@ -25,7 +26,7 @@ const octokit = new Octokit({
 
 // #region apis
 // 저장소 커밋 목록 조회하기
-export const getRepositoryCommits = async function getRepositoryCommits(userName: string, repoName: string) {
+const getRepositoryCommits = async function getRepositoryCommits(userName: string, repoName: string) {
   // https://api.github.com/repos/user name/repository name/commits
   const url = `/repos/${userName}/${repoName}/commits`;
 
@@ -37,6 +38,9 @@ export const getRepositoryCommits = async function getRepositoryCommits(userName
 
   return response.data as GithubRepositoryCommit[];
 };
+
+// 저장소 커밋 목록 조회하는 함수에 캐싱 적용
+const getCachedRepositoryCommits = createCachedFunction(getRepositoryCommits);
 
 // 사용자 이벤트 조회하기
 export const fetchEvents = async function fetchEvents({
@@ -108,7 +112,7 @@ export const fetchCommits = async function fetchUserCommits({
   const promises = [...repos].map((repo) => {
     const [author, repoName] = repo.split('/');
 
-    return getRepositoryCommits(author, repoName);
+    return getCachedRepositoryCommits(author, repoName);
   });
 
   const commitResponses = (await Promise.all(promises)).flat();
