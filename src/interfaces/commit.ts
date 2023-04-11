@@ -1,11 +1,17 @@
-import type { GithubCommit } from '@/api';
+import type { GithubCommit } from '@/types/github.types';
 
 interface CommitType {
   createAt: string;
   message: string;
-  url: string;
+  url?: string;
   sha: string;
 }
+
+type CommitResponse = {
+  [key: string]: any;
+  message: GithubCommit['message'];
+  sha: GithubCommit['sha'];
+};
 
 export default class Commit implements CommitType {
   createAt = '';
@@ -13,13 +19,12 @@ export default class Commit implements CommitType {
   url = '';
   sha = '';
 
-  constructor(createAt: string, commitResponse: GithubCommit) {
+  constructor(createAt: string, commitResponse: CommitResponse) {
     this.createAt = createAt;
 
-    const { message, url, sha } = commitResponse;
+    const { message, sha } = commitResponse;
 
     this.message = message;
-    this.url = url;
     this.sha = sha;
   }
 }

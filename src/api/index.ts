@@ -1,6 +1,20 @@
+import axios from 'axios';
 import { Octokit } from 'octokit';
-import { getCommitsFromResponse, isPushEvent } from '@/utils/github';
+import Commit from '@/interfaces/commit';
+import { getCommitsFromResponse } from '@/utils/github';
 import type { User } from '@/interfaces/user';
+import type { GithubEvent, GithubRepositoryCommit } from '@/types/github.types';
+
+//#region axios instance
+const instance = axios.create({
+  baseURL: 'https://api.github.com',
+  // timeout: 5000,
+  headers: {
+    Accept: 'application/vnd.github.v3+json',
+    Authorization: `token ${import.meta.env.VITE_GITHUB_TOKEN}`,
+  },
+});
+//#endregion
 
 //#region octokit instance
 // https://github.com/octokit/core.js#readme
@@ -9,23 +23,18 @@ const octokit = new Octokit({
 });
 //#endregion
 
-interface GithubCommit {
-  author: {
-    email: string;
-    name: string;
-  };
-  message: string;
-  sha: string;
-  url: string;
-}
+// 저장소 커밋 목록 조회하기
+export async function getRepositoryCommits(userName: string, repoName: string) {
+  // https://api.github.com/repos/user name/repository name/commits
+  const url = `/repos/${userName}/${repoName}/commits`;
 
-interface GithubEvent {
-  type: 'PushEvent' | 'WatchEvent';
-  created_at: string;
-  payload: {
-    commits: GithubCommit[];
-    size: number;
-  };
+  const response = await instance.get(url, {
+    params: {
+      author: userName,
+    },
+  });
+
+  return response.data as GithubRepositoryCommit[];
 }
 
 // 사용자 이벤트 조회하기
@@ -62,11 +71,59 @@ export const fetchCommits = async function fetchUserCommits({
   page?: number;
   perPage?: number;
 }) {
-  const response = await fetchEvents({ username, page, perPage });
+  const events = await fetchEvents({ username, page, perPage });
 
-  const pushEvents = response.filter(isPushEvent);
+  // const pushEvents = events.filter(isPushEvent);
+  const pushEvents: GithubEvent[] = [];
+  const createEvents: GithubEvent[] = [];
 
-  const commits = getCommitsFromResponse(pushEvents);
+  for (const event of events) {
+    if (event.type === 'PushEvent') {
+      pushEvents.push(event);
+    } else if (event.type === 'CreateEvent') {
+      createEvents.push(event);
+    }
+  }
+
+  // push events가 있을 경우
+  if (pushEvents.length) {
+    const commits = getCommitsFromResponse(pushEvents);
+
+    return commits;
+  }
+
+  // push events가 없을 경우 create events를 통해서 커밋 목록을 조회합니다.
+  const repos = new Set<string>();
+
+  for (const event of createEvents) {
+    const repo = event.repo;
+
+    if (!repos.has(repo.name)) {
+      repos.add(repo.name);
+    }
+  }
+
+  // promises
+  const promises = [...repos].map((repo) => {
+    const [author, repoName] = repo.split('/');
+
+    return getRepositoryCommits(author, repoName);
+  });
+
+  const commitResponses = (await Promise.all(promises)).flat();
+
+  const commits = commitResponses.map((response) => {
+    const {
+      sha,
+      commit: { author, message },
+    } = response;
+
+    return new Commit(author.date, {
+      message,
+      sha,
+      url: '',
+    });
+  });
 
   return commits;
 };
@@ -99,7 +156,5 @@ export const fetchUser = async function fetchUser(username: string) {
 
   return user;
 };
-
-export type { GithubCommit, GithubEvent };
 
 export default {};
